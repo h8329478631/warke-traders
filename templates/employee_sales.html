@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Sales | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Employee Sales</h1>
+            <p class="text-muted mb-0">Track user-wise invoice performance.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for employee in employees %}
+        <div class="col-md-6 col-xl-4">
+            <a href="{{ url_for('employee_sales_detail', user_id=employee.id) }}" class="text-decoration-none text-reset">
+                <div class="product-card h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {% if employee.profile_image %}
+                        <img src="{{ url_for('static', filename=employee.profile_image) }}" class="employee-avatar" alt="{{ employee.full_name }}">
+                        {% else %}
+                        <div class="employee-avatar avatar-placeholder"><i class="bi bi-person"></i></div>
+                        {% endif %}
+                        <div>
+                            <h2 class="h6 fw-bold mb-1">{{ employee.full_name or employee.username }}</h2>
+                            <p class="text-muted mb-0">{{ employee.mobile or employee.username }}</p>
+                        </div>
+                    </div>
+                    <div class="product-metrics">
+                        <span>Total sales <strong>Rs. {{ "%.2f"|format(employee.total_sales) }}</strong></span>
+                        <span>Invoices <strong>{{ employee.invoice_count }}</strong></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="empty-state text-center">No employee sales found.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

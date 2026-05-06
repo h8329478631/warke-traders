@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Billing | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Consumer Billing</h1>
+            <p class="text-muted mb-0">Create customer invoices and reduce stock automatically.</p>
+        </div>
+        <a href="{{ url_for('invoices') }}" class="btn btn-outline-primary">
+            <i class="bi bi-journal-text me-1"></i>Invoices
+        </a>
+    </div>
+
+    <form method="post" class="content-panel needs-validation" novalidate>
+        <div class="row g-3 mb-4">
+            <div class="col-md-5">
+                <label for="customer_id" class="form-label">Select existing customer</label>
+                <select class="form-select" id="customer_id" name="customer_id">
+                    <option value="">Add new customer</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.mobile }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-7 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="auto_send" name="auto_send">
+                    <label class="form-check-label" for="auto_send">Auto send invoice to customer email after bill generation</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="customer_name" class="form-label">Customer name</label>
+                <input type="text" class="form-control customer-field" id="customer_name" name="customer_name" required>
+                <div class="invalid-feedback">Customer name is required.</div>
+            </div>
+            <div class="col-md-3">
+                <label for="customer_mobile" class="form-label">Mobile</label>
+                <input type="text" class="form-control customer-field" id="customer_mobile" name="customer_mobile" required>
+                <div class="invalid-feedback">Mobile number is required.</div>
+            </div>
+            <div class="col-md-3">
+                <label for="customer_email" class="form-label">Email</label>
+                <input type="email" class="form-control customer-field" id="customer_email" name="customer_email">
+            </div>
+            <div class="col-md-3">
+                <label for="customer_address" class="form-label">Address</label>
+                <input type="text" class="form-control customer-field" id="customer_address" name="customer_address">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-bold mb-0">Bill Items</h2>
+            <button class="btn btn-outline-primary btn-sm" type="button" id="addRow">
+                <i class="bi bi-plus-circle me-1"></i>Add Row
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle billing-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Available</th>
+                        <th>Selling Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="billingRows"></tbody>
+            </table>
+        </div>
+
+        <div class="billing-total">
+            <span>Grand Total</span>
+            <strong id="grandTotal">Rs. 0.00</strong>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-receipt me-1"></i>Generate Bill
+            </button>
+            <a class="btn btn-light" href="{{ url_for('dashboard') }}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const products = {{ products|tojson }};
+    const rows = document.getElementById("billingRows");
+    const grandTotal = document.getElementById("grandTotal");
+    const customerSelect = document.getElementById("customer_id");
+    const customerFields = document.querySelectorAll(".customer-field");
+
+    function money(value) {
+        return `Rs. ${Number(value || 0).toFixed(2)}`;
+    }
+
+    function productOptions() {
+        return ['<option value="">Select product</option>'].concat(products.map((product) => (
+            `<option value="${product.id}" data-price="${product.selling_price}" data-stock="${product.stock_quantity}">${product.item_name}</option>`
+        ))).join("");
+    }
+
+    function refreshCustomerValidation() {
+        const existing = Boolean(customerSelect.value);
+        customerFields.forEach((field) => {
+            field.required = !existing && (field.id === "customer_name" || field.id === "customer_mobile");
+            field.disabled = existing;
+            if (existing) field.value = "";
+        });
+    }
+
+    function recalc() {
+        let total = 0;
+        rows.querySelectorAll("tr").forEach((row) => {
+            const select = row.querySelector(".product-select");
+            const selected = select.options[select.selectedIndex];
+            const price = Number(selected?.dataset.price || 0);
+            const stock = Number(selected?.dataset.stock || 0);
+            const quantityInput = row.querySelector(".quantity-input");
+            const quantity = Number(quantityInput.value || 0);
+            row.querySelector(".stock-cell").textContent = stock;
+            row.querySelector(".price-cell").textContent = money(price);
+            quantityInput.max = stock || "";
+            const lineTotal = price * quantity;
+            row.querySelector(".total-cell").textContent = money(lineTotal);
+            total += lineTotal;
+        });
+        grandTotal.textContent = money(total);
+    }
+
+    function addRow() {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td><select class="form-select product-select" name="product_id[]" required>${productOptions()}</select></td>
+            <td class="stock-cell text-muted">0</td>
+            <td class="price-cell">Rs. 0.00</td>
+            <td><input class="form-control quantity-input" type="number" name="quantity[]" min="1" value="1" required></td>
+            <td class="total-cell fw-semibold">Rs. 0.00</td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-danger remove-row" type="button"><i class="bi bi-x-lg"></i></button></td>
+        `;
+        rows.appendChild(tr);
+        recalc();
+    }
+
+    document.getElementById("addRow").addEventListener("click", addRow);
+    customerSelect.addEventListener("change", refreshCustomerValidation);
+    rows.addEventListener("input", recalc);
+    rows.addEventListener("change", recalc);
+    rows.addEventListener("click", (event) => {
+        if (event.target.closest(".remove-row")) {
+            event.target.closest("tr").remove();
+            if (!rows.children.length) addRow();
+            recalc();
+        }
+    });
+
+    (() => {
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+    })();
+
+    refreshCustomerValidation();
+    addRow();
+</script>
+{% endblock %}

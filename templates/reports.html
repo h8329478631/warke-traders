@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Reports | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4 no-print">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Reports</h1>
+            <p class="text-muted mb-0">Generate inventory and billing reports for printing, PDF sharing, and email.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" target="_blank" href="{{ url_for('reports_pdf', report_type=report_type) }}">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Inventory PDF
+            </a>
+            <a class="btn btn-outline-success" target="_blank" href="{{ url_for('billing_report_pdf', start_date=start_date, end_date=end_date) }}">
+                <i class="bi bi-graph-up-arrow me-1"></i>Billing PDF
+            </a>
+            <button class="btn btn-dark" type="button" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print Report
+            </button>
+        </div>
+    </div>
+
+    <form class="content-panel mb-4 no-print" method="get">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="report_type" class="form-label">Report type</label>
+                <select class="form-select" id="report_type" name="report_type">
+                    <option value="all" {% if report_type == "all" %}selected{% endif %}>All items</option>
+                    <option value="low_stock" {% if report_type == "low_stock" %}selected{% endif %}>Low stock items only</option>
+                    <option value="out_of_stock" {% if report_type == "out_of_stock" %}selected{% endif %}>Out of stock items only</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Sales from</label>
+                <input class="form-control" type="date" id="start_date" name="start_date" value="{{ start_date }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">Sales to</label>
+                <input class="form-control" type="date" id="end_date" name="end_date" value="{{ end_date }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-arrow-repeat me-1"></i>Generate Report
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row g-3 mb-4 no-print">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-cash-coin"></i></div>
+                <span>Total Sales</span>
+                <strong>Rs. {{ "%.2f"|format(billing_stats.total_sales) }}</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-receipt"></i></div>
+                <span>Total Invoices</span>
+                <strong>{{ billing_stats.invoice_count }}</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-bag-plus"></i></div>
+                <span>Total Purchases</span>
+                <strong>Rs. {{ "%.2f"|format(purchase_stats.total_purchases) }}</strong>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <form class="stat-card d-flex flex-column justify-content-between" method="post" action="{{ url_for('email_billing_report') }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <div>
+                    <div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-envelope-paper"></i></div>
+                    <span>Owner Email</span>
+                    <strong>Daily Report</strong>
+                </div>
+                <button class="btn btn-outline-dark btn-sm mt-3" type="submit">
+                    <i class="bi bi-send me-1"></i>Send to Owner
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4 no-print">
+        <div class="col-lg-6">
+            <div class="content-panel h-100">
+                <h2 class="h5 fw-bold mb-3">Top Selling Items</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in top_items %}
+                            <tr>
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ item.total_quantity }}</td>
+                                <td>Rs. {{ "%.2f"|format(item.total_sales) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted py-3">No sales yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="content-panel h-100">
+                <h2 class="h5 fw-bold mb-3">Date-wise Sales</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in daily_sales %}
+                            <tr>
+                                <td>{{ sale.sale_date.strftime("%d-%m-%Y") }}</td>
+                                <td>Rs. {{ "%.2f"|format(sale.total_sales) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center text-muted py-3">No sales yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4 no-print">
+        <div class="col-lg-6">
+            <div class="content-panel h-100">
+                <h2 class="h5 fw-bold mb-3">Supplier-wise Purchases</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Entries</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supplier in supplier_purchases %}
+                            <tr>
+                                <td>{{ supplier.supplier_name }}</td>
+                                <td>{{ supplier.purchase_count }}</td>
+                                <td>Rs. {{ "%.2f"|format(supplier.total_purchases) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted py-3">No purchases yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="content-panel h-100">
+                <h2 class="h5 fw-bold mb-3">Date-wise Purchases</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for purchase in daily_purchases %}
+                            <tr>
+                                <td>{{ purchase.purchase_date.strftime("%d-%m-%Y") }}</td>
+                                <td>Rs. {{ "%.2f"|format(purchase.total_purchases) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center text-muted py-3">No purchases yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="report-sheet">
+        <header class="report-header text-center">
+            <h2>Warke Traders</h2>
+            <p class="fw-semibold mb-1">Owner: Pro. Pra. Harshal Warke</p>
+            <p class="mb-1">{{ shop_address }}</p>
+            <p class="mb-0">{{ shop_mobile }} | {{ shop_email }}</p>
+        </header>
+
+        <div class="report-meta">
+            <div>
+                <strong>Inventory Report</strong>
+                <span>
+                    {% if report_type == "low_stock" %}
+                        Low stock items
+                    {% elif report_type == "out_of_stock" %}
+                        Out of stock items
+                    {% else %}
+                        All items
+                    {% endif %}
+                </span>
+            </div>
+            <div class="text-md-end">
+                <strong>Date</strong>
+                <span>{{ generated_at.strftime("%d-%m-%Y") }}</span>
+                <strong class="ms-md-3">Time</strong>
+                <span>{{ generated_at.strftime("%I:%M %p") }}</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered report-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Buying Price</th>
+                        <th>Selling Price</th>
+                        <th>Stock Quantity</th>
+                        <th>Profit per Item</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.item_name }}</td>
+                        <td>Rs. {{ "%.2f"|format(product.buying_price) }}</td>
+                        <td>Rs. {{ "%.2f"|format(product.selling_price) }}</td>
+                        <td>{{ product.stock_quantity }}</td>
+                        <td>Rs. {{ "%.2f"|format(product.selling_price - product.buying_price) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No products found for this report.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

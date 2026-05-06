@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" class="dashboard-logo" alt="Warke Traders logo">
+            <div>
+            <p class="text-uppercase text-muted small fw-semibold mb-1">Hardware inventory</p>
+            <h1 class="h2 fw-bold mb-1">Welcome to Warke Traders</h1>
+            <p class="text-muted mb-0">Pro. Pra. Harshal Warke</p>
+            </div>
+        </div>
+        {% if session.get("role") == "admin" %}
+        <a href="{{ url_for('add_product') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Add Product
+        </a>
+        {% else %}
+        <a href="{{ url_for('billing') }}" class="btn btn-primary">
+            <i class="bi bi-receipt-cutoff me-1"></i>New Bill
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 {% if session.get('role') == 'admin' %}col-xl-3{% else %}col-xl-6{% endif %}">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-boxes"></i></div>
+                <span>Total Products</span>
+                <strong>{{ stats.total_products }}</strong>
+            </div>
+        </div>
+        <div class="col-sm-6 {% if session.get('role') == 'admin' %}col-xl-3{% else %}col-xl-6{% endif %}">
+            <div class="stat-card">
+                <div class="stat-icon bg-info-subtle text-info"><i class="bi bi-stack"></i></div>
+                <span>Total Stock</span>
+                <strong>{{ stats.total_stock }}</strong>
+            </div>
+        </div>
+        {% if session.get("role") == "admin" %}
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-cash-stack"></i></div>
+                <span>Total Investment</span>
+                <strong>Rs. {{ "%.2f"|format(stats.total_investment) }}</strong>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-graph-up-arrow"></i></div>
+                <span>Potential Profit</span>
+                <strong>Rs. {{ "%.2f"|format(stats.potential_profit) }}</strong>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="content-panel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-bold mb-0">Recent Products</h2>
+            <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-table me-1"></i>View All
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        {% if session.get("role") == "admin" %}
+                        <th>Buying</th>
+                        {% endif %}
+                        <th>Selling</th>
+                        <th>Stock</th>
+                        {% if session.get("role") == "admin" %}
+                        <th>Profit/Item</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in recent_products %}
+                    <tr>
+                        <td class="fw-semibold">{{ product.item_name }}</td>
+                        {% if session.get("role") == "admin" %}
+                        <td>Rs. {{ "%.2f"|format(product.buying_price) }}</td>
+                        {% endif %}
+                        <td>Rs. {{ "%.2f"|format(product.selling_price) }}</td>
+                        <td>{{ product.stock_quantity }}</td>
+                        {% if session.get("role") == "admin" %}
+                        <td class="text-success fw-semibold">Rs. {{ "%.2f"|format(product.selling_price - product.buying_price) }}</td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="{{ 5 if session.get('role') == 'admin' else 3 }}" class="text-center text-muted py-4">No products added yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

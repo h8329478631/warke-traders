@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice #{{ invoice.id }} | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4 no-print">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Invoice #{{ invoice.id }}</h1>
+            <p class="text-muted mb-0">{{ invoice.customer_name }} - {{ invoice.customer_mobile }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('invoice_pdf', invoice_id=invoice.id) }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+            </a>
+            <form method="post" action="{{ url_for('email_invoice', invoice_id=invoice.id) }}">
+                <button class="btn btn-outline-success" type="submit">
+                    <i class="bi bi-envelope me-1"></i>Send Email
+                </button>
+            </form>
+            <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success">
+                <i class="bi bi-whatsapp me-1"></i>WhatsApp
+            </a>
+            <button class="btn btn-dark" type="button" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print Invoice
+            </button>
+        </div>
+    </div>
+
+    <section class="report-sheet invoice-sheet">
+        <header class="report-header text-center">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" class="invoice-logo mb-2" alt="Warke Traders logo">
+            <h2>Warke Traders</h2>
+            <p class="fw-semibold mb-1">Owner: Pro. Pra. Harshal Warke</p>
+            <p class="mb-1">{{ shop_address }}</p>
+            <p class="mb-0">{{ shop_mobile }} | {{ shop_email }}</p>
+        </header>
+
+        <div class="report-meta">
+            <div>
+                <strong>Invoice ID</strong>
+                <span>#{{ invoice.id }}</span>
+            </div>
+            <div class="text-md-end">
+                <strong>Date</strong>
+                <span>{{ invoice.created_at.strftime("%d-%m-%Y") }}</span>
+                <strong class="ms-md-3">Time</strong>
+                <span>{{ invoice.created_at.strftime("%I:%M %p") }}</span>
+            </div>
+        </div>
+
+        <div class="customer-box mb-4">
+            <h3 class="h6 fw-bold">Customer Info</h3>
+            <p class="mb-1"><strong>Name:</strong> {{ invoice.customer_name }}</p>
+            <p class="mb-1"><strong>Mobile:</strong> {{ invoice.customer_mobile }}</p>
+            <p class="mb-0"><strong>Address:</strong> {{ invoice.customer_address or "-" }}</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered report-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Selling Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>Rs. {{ "%.2f"|format(item.selling_price) }}</td>
+                        <td>Rs. {{ "%.2f"|format(item.total_price) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">Grand Total</th>
+                        <th>Rs. {{ "%.2f"|format(invoice.total_amount) }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <p class="text-center fw-semibold mt-4 mb-0">Thank you for your business.</p>
+    </section>
+</div>
+{% endblock %}

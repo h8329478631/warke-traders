@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Add Employee | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Add Employee</h1>
+            <p class="text-muted mb-0">Create a full employee profile with secure login access.</p>
+        </div>
+        <a href="{{ url_for('employees') }}" class="btn btn-outline-primary">
+            <i class="bi bi-people me-1"></i>Employees
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="content-panel needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="full_name" class="form-label">Full name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                <div class="invalid-feedback">Full name is required.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+                <div class="invalid-feedback">Username is required.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+                <div class="invalid-feedback">Password must be at least 6 characters.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="confirm_password" class="form-label">Confirm password</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6" required>
+                <div class="invalid-feedback">Confirm the password.</div>
+            </div>
+            <div class="col-md-4">
+                <label for="mobile" class="form-label">Mobile</label>
+                <input type="text" class="form-control" id="mobile" name="mobile" required>
+                <div class="invalid-feedback">Mobile is required.</div>
+            </div>
+            <div class="col-md-4">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="col-md-4">
+                <label for="aadhaar_number" class="form-label">Aadhaar number</label>
+                <input type="text" class="form-control" id="aadhaar_number" name="aadhaar_number">
+            </div>
+            <div class="col-md-8">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label for="profile_image" class="form-label">Profile image</label>
+                <input type="file" class="form-control" id="profile_image" name="profile_image" accept=".png,.jpg,.jpeg,.webp">
+            </div>
+        </div>
+        <button class="btn btn-primary mt-4" type="submit">
+            <i class="bi bi-person-plus me-1"></i>Create Employee
+        </button>
+    </form>
+</div>
+<script>
+    (() => {
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+    })();
+</script>
+{% endblock %}

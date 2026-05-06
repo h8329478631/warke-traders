@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Sales Detail | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center gap-3">
+            {% if employee.profile_image %}
+            <img src="{{ url_for('static', filename=employee.profile_image) }}" class="employee-avatar employee-avatar-lg" alt="{{ employee.full_name }}">
+            {% else %}
+            <div class="employee-avatar employee-avatar-lg avatar-placeholder"><i class="bi bi-person"></i></div>
+            {% endif %}
+            <div>
+                <h1 class="h2 fw-bold mb-1">{{ employee.full_name or employee.username }}</h1>
+                <p class="text-muted mb-0">{{ employee.mobile or "-" }} | {{ employee.email or "-" }}</p>
+            </div>
+        </div>
+        <a href="{{ url_for('employee_sales') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <div class="content-panel">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Customer</th>
+                        <th>Mobile</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th class="text-end">View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td class="fw-semibold">#{{ invoice.id }}</td>
+                        <td>{{ invoice.customer_name }}</td>
+                        <td>{{ invoice.customer_mobile }}</td>
+                        <td>Rs. {{ "%.2f"|format(invoice.total_amount) }}</td>
+                        <td>{{ invoice.created_at.strftime("%d-%m-%Y %I:%M %p") }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('invoice_detail', invoice_id=invoice.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No invoices created by this employee.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

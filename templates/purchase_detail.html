@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase #{{ purchase.id }} | Warke Traders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header mb-4 no-print">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Purchase #{{ purchase.id }}</h1>
+            <p class="text-muted mb-0">{{ purchase.supplier_name }} - {{ purchase.supplier_mobile }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('purchase_pdf', purchase_id=purchase.id) }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+            </a>
+            <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success">
+                <i class="bi bi-whatsapp me-1"></i>Send via WhatsApp
+            </a>
+            <button class="btn btn-dark" type="button" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print
+            </button>
+        </div>
+    </div>
+
+    <section class="report-sheet invoice-sheet">
+        <header class="report-header text-center">
+            <h2>Warke Traders</h2>
+            <p class="fw-semibold mb-1">Owner: Pro. Pra. Harshal Warke</p>
+            <p class="mb-1">{{ shop_address }}</p>
+            <p class="mb-0">{{ shop_mobile }} | {{ shop_email }}</p>
+        </header>
+
+        <div class="report-meta">
+            <div>
+                <strong>Purchase ID</strong>
+                <span>#{{ purchase.id }}</span>
+            </div>
+            <div class="text-md-end">
+                <strong>Date</strong>
+                <span>{{ purchase.created_at.strftime("%d-%m-%Y") }}</span>
+                <strong class="ms-md-3">Time</strong>
+                <span>{{ purchase.created_at.strftime("%I:%M %p") }}</span>
+            </div>
+        </div>
+
+        <div class="customer-box mb-4">
+            <h3 class="h6 fw-bold">Supplier Details</h3>
+            <p class="mb-1"><strong>Name:</strong> {{ purchase.supplier_name }}</p>
+            <p class="mb-1"><strong>Mobile:</strong> {{ purchase.supplier_mobile }}</p>
+            <p class="mb-0"><strong>Address:</strong> {{ purchase.supplier_address or "-" }}</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered report-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Buying Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>Rs. {{ "%.2f"|format(item.buying_price) }}</td>
+                        <td>Rs. {{ "%.2f"|format(item.total_price) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">Grand Total</th>
+                        <th>Rs. {{ "%.2f"|format(purchase.total_amount) }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

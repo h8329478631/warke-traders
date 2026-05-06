@@ -1,0 +1,339 @@
+:root {
+    --ink: #152238;
+    --muted: #6c757d;
+    --line: #e7edf3;
+    --surface: #ffffff;
+    --page: #f5f7fb;
+    --primary: #1f6feb;
+}
+
+body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.app-navbar {
+    background: linear-gradient(90deg, #152238, #1f4b6e);
+    box-shadow: 0 10px 25px rgba(21, 34, 56, 0.14);
+}
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 4px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.login-screen {
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(21, 34, 56, 0.82), rgba(21, 34, 56, 0.76)),
+        url("https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=1600&q=80") center/cover;
+}
+
+.login-card,
+.content-panel,
+.stat-card,
+.product-card,
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.login-card {
+    padding: 2rem;
+}
+
+.brand-mark {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #eaf2ff;
+    color: var(--primary);
+    font-size: 2rem;
+}
+
+.login-logo {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 8px;
+    box-shadow: 0 12px 28px rgba(21, 34, 56, 0.18);
+}
+
+.dashboard-logo {
+    width: 76px;
+    height: 76px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 7px;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 24px rgba(21, 34, 56, 0.1);
+    flex: 0 0 auto;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.content-panel {
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(21, 34, 56, 0.05);
+}
+
+.stat-card {
+    padding: 1.25rem;
+    min-height: 150px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.stat-card:hover,
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px rgba(21, 34, 56, 0.12);
+}
+
+.stat-card span {
+    display: block;
+    color: var(--muted);
+    margin-top: 1rem;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    margin-top: 0.25rem;
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    font-size: 1.35rem;
+}
+
+.product-card {
+    padding: 1rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.product-metrics {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.product-metrics span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.product-metrics strong {
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.table thead th {
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+    border-radius: 6px;
+}
+
+.empty-state {
+    padding: 3rem 1rem;
+}
+
+.report-sheet {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(21, 34, 56, 0.05);
+}
+
+.report-header {
+    border-bottom: 2px solid #152238;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.report-header h2 {
+    color: #152238;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+}
+
+.report-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.report-meta strong,
+.report-meta span {
+    display: inline-block;
+    margin-right: 0.35rem;
+}
+
+.report-table thead th {
+    background: #152238;
+    color: #ffffff;
+    border-color: #152238;
+}
+
+.report-table td,
+.report-table th {
+    font-size: 0.92rem;
+}
+
+.billing-table select {
+    min-width: 220px;
+}
+
+.billing-table input {
+    min-width: 90px;
+}
+
+.billing-total {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    font-size: 1.1rem;
+}
+
+.billing-total strong {
+    min-width: 150px;
+    text-align: right;
+    font-size: 1.35rem;
+}
+
+.customer-box {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.invoice-sheet tfoot th {
+    background: #f8fafc;
+}
+
+.invoice-logo {
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 7px;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 18px rgba(21, 34, 56, 0.12);
+}
+
+@media (max-width: 576px) {
+    .page-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .page-header .btn,
+    .page-header > div:last-child {
+        width: 100%;
+    }
+
+    .login-card {
+        padding: 1.35rem;
+    }
+
+    .navbar-logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .login-logo {
+        width: 78px;
+        height: 78px;
+    }
+
+    .dashboard-logo {
+        width: 58px;
+        height: 58px;
+    }
+
+    .invoice-logo {
+        width: 66px;
+        height: 66px;
+    }
+
+    .report-meta {
+        flex-direction: column;
+    }
+}
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .app-navbar,
+    .no-print,
+    .alert {
+        display: none !important;
+    }
+
+    main {
+        padding: 0 !important;
+    }
+
+    .container {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+    }
+
+    .report-sheet {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .report-table thead th {
+        color: #ffffff !important;
+        background: #152238 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
