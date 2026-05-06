@@ -1,3 +1,4 @@
+HEAD
 # Warke Traders Inventory Management System
 
 A Flask, Bootstrap 5, and MySQL inventory system for Warke Traders.
@@ -228,3 +229,6 @@ https://wa.me/<mobile_number>?text=<encoded_message>
 ```
 
 For Indian 10-digit numbers, the app automatically prefixes `91`.
+
+# warke-traders
+
